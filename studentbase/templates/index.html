@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Management</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 { text-align: center; color: #333; padding: 20px 0 10px; margin: 0; }
+    h2 { color: #444; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+
+    .page-wrap {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .main-content { flex: 1; min-width: 0; padding-bottom: 40px; }
+
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 15px;
+    }
+
+    .sidebar-toggle {
+      display: none;
+      width: 100%;
+      padding: 10px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .cheatsheet {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .cheatsheet-title {
+      background: #333;
+      color: white;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .cs-category { border-bottom: 1px solid #eee; }
+
+    .cs-cat-header {
+      width: 100%;
+      text-align: left;
+      padding: 9px 14px;
+      background: #f8f8f8;
+      border: none;
+      border-bottom: 1px solid #eee;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #333;
+    }
+    .cs-cat-header:hover { background: #eee; }
+    .cs-cat-header .arrow { font-size: 10px; color: #999; }
+
+    .cs-commands { display: none; }
+    .cs-commands.open { display: block; }
+
+    .cs-cmd {
+      width: 100%;
+      text-align: left;
+      padding: 7px 14px 7px 20px;
+      background: white;
+      border: none;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 12px;
+      cursor: pointer;
+      color: #555;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cs-cmd:hover { background: #f0f7ff; color: #3498db; }
+    .cs-cmd .cmd-name { font-weight: bold; color: #333; font-family: monospace; }
+    .cs-cmd:hover .cmd-name { color: #3498db; }
+
+    .syntax-box {
+      background: #1e1e1e;
+      color: #0f0;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 10px 14px;
+      white-space: pre-wrap;
+      border-bottom: 1px solid #333;
+      display: none;
+      line-height: 1.6;
+    }
+    .syntax-box.open { display: block; }
+    .copy-btn {
+      float: right;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 2px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    .copy-btn:hover { background: #2980b9; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    label { font-size: 14px; color: #555; }
+    button#save-btn {
+      padding: 9px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    button#save-btn:hover { background: #45a049; }
+    button.green { padding: 9px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px; }
+    button.green:hover { background: #45a049; }
+    button.red { background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px; padding: 9px 20px; }
+    button.red:hover { background: #c0392b; }
+    button.blue { background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px; padding: 9px 20px; }
+    button.blue:hover { background: #2980b9; }
+    button.grey { background: #aaa; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 8px; padding: 9px 20px; }
+    button.grey:hover { background: #999; }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 25px;
+      border: 1px solid #ddd;
+    }
+
+    .msg { padding: 8px 12px; border-radius: 4px; margin-top: 10px; font-size: 14px; display: none; }
+    .msg.green-msg { background: #d4edda; color: #155724; display: block; }
+    .msg.red-msg   { background: #f8d7da; color: #721c24; display: block; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+    th { background: #eee; padding: 8px; text-align: left; border: 1px solid #ccc; }
+    td { padding: 7px 8px; border: 1px solid #ddd; }
+    tr:nth-child(even) { background: #fafafa; }
+
+    .filter-row { margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
+
+    #sql-input { height: 80px; font-family: monospace; }
+    #sql-result {
+      background: #1e1e1e;
+      color: #0f0;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      display: none;
+    }
+
+    .ddl-badge { color: #2980b9; }
+    .dml-badge { color: #27ae60; }
+    .dcl-badge { color: #8e44ad; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #aaa;
+      font-size: 13px;
+      border-top: 1px solid #ddd;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 700px) {
+      .page-wrap { flex-direction: column; }
+      .sidebar { width: 100%; position: static; }
+      .sidebar-toggle { display: block; }
+      .cheatsheet { display: none; }
+      .cheatsheet.open { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Student Management System</h1>
+
+<div class="page-wrap">
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- SECTION 1: REGISTRATION -->
+    <div class="section">
+      <h2>1. Student Registration</h2>
+      <input type="hidden" id="edit-id"/>
+
+      <label>Full Name *</label>
+      <input type="text" id="name" placeholder="e.g. Arjun Sharma"/>
+
+      <label>Roll Number *</label>
+      <input type="text" id="roll" placeholder="e.g. CS2024001"/>
+
+      <label>Phone</label>
+      <input type="tel" id="phone" placeholder="e.g. 9876543210"/>
+
+      <label>Email</label>
+      <input type="email" id="email" placeholder="e.g. arjun@college.edu"/>
+
+      <label>Course</label>
+      <select id="course">
+        <option value="">-- Select --</option>
+        <option>B.Tech</option>
+        <option>M.Tech</option>
+        <option>BCA</option>
+        <option>MCA</option>
+        <option>B.Sc</option>
+        <option>M.Sc</option>
+        <option>MBA</option>
+        <option>BBA</option>
+      </select>
+
+      <label>Department</label>
+      <select id="department">
+        <option value="">-- Select --</option>
+        <option>Computer Science</option>
+        <option>Computer Science and Business Systems</option>
+        <option>Electronics</option>
+        <option>Mechanical</option>
+        <option>Civil</option>
+        <option>Information Technology</option>
+        <option>Mathematics</option>
+        <option>Physics</option>
+        <option>Management</option>
+      </select>
+
+      <label>Additional Notes</label>
+      <textarea id="notes" placeholder="Any extra info..."></textarea>
+
+      <div>
+        <button id="save-btn" onclick="saveStudent()">Save Student</button>
+        <button class="grey" onclick="clearForm()">Clear</button>
+      </div>
+      <div id="form-msg" class="msg"></div>
+    </div>
+
+    <!-- SECTION 2: RECORDS -->
+    <div class="section">
+      <h2>2. Student Records</h2>
+      <div class="filter-row">
+        <button class="blue" onclick="loadStudents('active')">Active Students</button>
+        <button class="blue" onclick="loadStudents('all')">All Students</button>
+        <button class="grey" onclick="loadStudents(currentFilter)">Refresh</button>
+      </div>
+      <div id="records-table">Loading...</div>
+    </div>
+
+    <!-- SECTION 3: DBMS CONSOLE -->
+    <div class="section">
+      <h2>3. DBMS Console</h2>
+      <p style="font-size:13px;color:#777;">
+        <b>DDL Commands:</b> CREATE, ALTER, DROP, TRUNCATE, RENAME, COMMENT<br/>
+        <b>DML Commands:</b> SELECT, INSERT, UPDATE, DELETE, MERGE<br/>
+        <b>DCL Commands:</b> GRANT, REVOKE
+        <br/><small style="color:#aaa;">👉 Click any command in the sidebar for syntax help</small>
+      </p>
+      <label>SQL Command</label>
+      <textarea id="sql-input" placeholder="e.g. SELECT * FROM students;"></textarea>
+      <button class="green" onclick="runSQL()">Run</button>
+      <div id="sql-result"></div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">📖 SQL Syntax Cheatsheet</button>
+    <div class="cheatsheet" id="cheatsheet">
+      <div class="cheatsheet-title">📖 SQL Syntax Cheatsheet</div>
+
+      <!-- DDL -->
+      <div class="cs-category">
+        <button class="cs-cat-header" onclick="toggleCat('ddl')">
+          <span class="ddl-badge">DDL — Data Definition Language</span>
+          <span class="arrow" id="arrow-ddl">▼</span>
+        </button>
+        <div class="cs-commands open" id="cat-ddl">
+
+          <button class="cs-cmd" onclick="toggleSyntax('CREATE')">
+            <span class="cmd-name">CREATE</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-CREATE">CREATE TABLE students (
+  name VARCHAR(100),
+  roll VARCHAR(50),
+  phone VARCHAR(20),
+  email VARCHAR(100),
+  course VARCHAR(50),
+  department VARCHAR(50)
+);
+<button class="copy-btn" onclick="copyToConsole('CREATE TABLE students (\n  name VARCHAR(100),\n  roll VARCHAR(50)\n)')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('ALTER-ADD')">
+            <span class="cmd-name">ALTER — Add Column</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-ALTER-ADD">ALTER TABLE students ADD COLUMN year 1;
+<button class="copy-btn" onclick="copyToConsole('ALTER TABLE students ADD COLUMN year 1')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('ALTER-DROP')">
+            <span class="cmd-name">ALTER — Drop Column</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-ALTER-DROP">ALTER TABLE students DROP COLUMN year;
+<button class="copy-btn" onclick="copyToConsole('ALTER TABLE students DROP COLUMN year')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('ALTER-RENAME')">
+            <span class="cmd-name">ALTER — Rename Table</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-ALTER-RENAME">ALTER TABLE students RENAME TO alumni;
+<button class="copy-btn" onclick="copyToConsole('ALTER TABLE students RENAME TO alumni')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('DROP')">
+            <span class="cmd-name">DROP</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-DROP">-- Deletes entire table!
+DROP TABLE students;
+<button class="copy-btn" onclick="copyToConsole('DROP TABLE students')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('TRUNCATE')">
+            <span class="cmd-name">TRUNCATE</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-TRUNCATE">-- Removes all rows, keeps table
+TRUNCATE TABLE students;
+<button class="copy-btn" onclick="copyToConsole('TRUNCATE TABLE students')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('RENAME')">
+            <span class="cmd-name">RENAME</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-RENAME">RENAME TABLE students TO alumni;
+<button class="copy-btn" onclick="copyToConsole('RENAME TABLE students TO alumni')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('COMMENT')">
+            <span class="cmd-name">COMMENT</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-COMMENT">COMMENT ON TABLE students IS 'Stores student records';
+<button class="copy-btn" onclick="copyToConsole(&quot;COMMENT ON TABLE students IS 'Stores student records'&quot;)">Use</button></div>
+
+        </div>
+      </div>
+
+      <!-- DML -->
+      <div class="cs-category">
+        <button class="cs-cat-header" onclick="toggleCat('dml')">
+          <span class="dml-badge">DML — Data Manipulation Language</span>
+          <span class="arrow" id="arrow-dml">▶</span>
+        </button>
+        <div class="cs-commands" id="cat-dml">
+
+          <button class="cs-cmd" onclick="toggleSyntax('SELECT-ALL')">
+            <span class="cmd-name">SELECT — All</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-SELECT-ALL">SELECT * FROM students;
+<button class="copy-btn" onclick="copyToConsole('SELECT * FROM students')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('SELECT-WHERE')">
+            <span class="cmd-name">SELECT — Where</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-SELECT-WHERE">SELECT * FROM students WHERE roll='CS001';
+<button class="copy-btn" onclick="copyToConsole(&quot;SELECT * FROM students WHERE roll='CS001'&quot;)">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('SELECT-LIMIT')">
+            <span class="cmd-name">SELECT — Limit</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-SELECT-LIMIT">SELECT * FROM students LIMIT 5;
+<button class="copy-btn" onclick="copyToConsole('SELECT * FROM students LIMIT 5')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('INSERT')">
+            <span class="cmd-name">INSERT</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-INSERT">INSERT INTO students (name, roll, phone, email, course, department)
+VALUES ('Arjun', 'CS001', '9876543210', 'a@b.com', 'B.Tech', 'CSE');
+<button class="copy-btn" onclick="copyToConsole(&quot;INSERT INTO students (name, roll, phone, email, course, department) VALUES ('Arjun', 'CS001', '9876543210', 'a@b.com', 'B.Tech', 'CSE')&quot;)">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('UPDATE')">
+            <span class="cmd-name">UPDATE</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-UPDATE">-- Update one field
+UPDATE students SET name='Arjun' WHERE roll='CS001';
+
+-- Update multiple fields
+UPDATE students SET name='Arjun', phone='9999999999' WHERE roll='CS001';
+
+-- Update all records
+UPDATE students SET course='B.Tech';
+<button class="copy-btn" onclick="copyToConsole(&quot;UPDATE students SET name='Arjun' WHERE roll='CS001'&quot;)">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('DELETE')">
+            <span class="cmd-name">DELETE</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-DELETE">-- Delete one student
+DELETE FROM students WHERE roll='CS001';
+
+-- Delete all students
+DELETE FROM students;
+<button class="copy-btn" onclick="copyToConsole(&quot;DELETE FROM students WHERE roll='CS001'&quot;)">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('MERGE')">
+            <span class="cmd-name">MERGE (Upsert)</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-MERGE">-- Insert if not exists, update if exists
+MERGE INTO students (name, roll, phone)
+VALUES ('Arjun', 'CS001', '9876543210');
+<button class="copy-btn" onclick="copyToConsole(&quot;MERGE INTO students (name, roll, phone) VALUES ('Arjun', 'CS001', '9876543210')&quot;)">Use</button></div>
+
+        </div>
+      </div>
+
+      <!-- DCL -->
+      <div class="cs-category">
+        <button class="cs-cat-header" onclick="toggleCat('dcl')">
+          <span class="dcl-badge">DCL — Data Control Language</span>
+          <span class="arrow" id="arrow-dcl">▶</span>
+        </button>
+        <div class="cs-commands" id="cat-dcl">
+
+          <button class="cs-cmd" onclick="toggleSyntax('GRANT')">
+            <span class="cmd-name">GRANT</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-GRANT">-- Grant read access
+GRANT READ ON students TO user1;
+
+-- Grant all access
+GRANT ALL ON students TO user1;
+<button class="copy-btn" onclick="copyToConsole('GRANT READ ON students TO user1')">Use</button></div>
+
+          <button class="cs-cmd" onclick="toggleSyntax('REVOKE')">
+            <span class="cmd-name">REVOKE</span><span>▶</span>
+          </button>
+          <div class="syntax-box" id="syn-REVOKE">-- Revoke read access
+REVOKE READ ON students FROM user1;
+
+-- Revoke all access
+REVOKE ALL ON students FROM user1;
+<button class="copy-btn" onclick="copyToConsole('REVOKE READ ON students FROM user1')">Use</button></div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Developed By <b style="color:#555;">Saranaeswar</b> | CSBS (BATCH 2024-2028)
+</footer>
+
+<script>
+let currentFilter = 'active';
+
+function toggleSidebar() {
+  document.getElementById('cheatsheet').classList.toggle('open');
+}
+
+function toggleCat(id) {
+  const el    = document.getElementById('cat-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  el.classList.toggle('open');
+  arrow.textContent = el.classList.contains('open') ? '▼' : '▶';
+}
+
+function toggleSyntax(id) {
+  document.getElementById('syn-' + id).classList.toggle('open');
+}
+
+function copyToConsole(text) {
+  document.getElementById('sql-input').value = text;
+  document.getElementById('sql-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function saveStudent() {
+  const id   = document.getElementById('edit-id').value;
+  const name = document.getElementById('name').value.trim();
+  const roll = document.getElementById('roll').value.trim();
+  if (!name || !roll) { showMsg('Name and Roll Number are required!', 'red-msg'); return; }
+
+  const payload = {
+    name, roll,
+    phone:      document.getElementById('phone').value.trim(),
+    email:      document.getElementById('email').value.trim(),
+    course:     document.getElementById('course').value,
+    department: document.getElementById('department').value,
+    notes:      document.getElementById('notes').value.trim()
+  };
+
+  try {
+    const res  = await fetch(id ? `/api/students/${id}` : '/api/students', {
+      method: id ? 'PUT' : 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) {
+      showMsg(id ? 'Student updated!' : 'Student saved!', 'green-msg');
+      clearForm();
+      loadStudents(currentFilter);
+    }
+  } catch(e) { showMsg('Error. Is Flask running?', 'red-msg'); }
+}
+
+function showMsg(text, cls) {
+  const el = document.getElementById('form-msg');
+  el.textContent = text;
+  el.className = 'msg ' + cls;
+  setTimeout(() => el.className = 'msg', 3000);
+}
+
+function clearForm() {
+  ['edit-id','name','roll','phone','email','notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('course').value = '';
+  document.getElementById('department').value = '';
+}
+
+async function loadStudents(filter = 'active') {
+  currentFilter = filter;
+  const wrap = document.getElementById('records-table');
+  wrap.innerHTML = 'Loading...';
+  try {
+    const res  = await fetch(`/api/students?filter=${filter}`);
+    const data = await res.json();
+    if (!data.length) { wrap.innerHTML = '<p>No records found.</p>'; return; }
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr><th>#</th><th>Name</th><th>Roll</th><th>Phone</th><th>Email</th><th>Course</th><th>Dept</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          ${data.map((s, i) => `
+            <tr>
+              <td>${i+1}</td>
+              <td>${s.name}</td><td>${s.roll}</td>
+              <td>${s.phone||'-'}</td><td>${s.email||'-'}</td>
+              <td>${s.course||'-'}</td><td>${s.department||'-'}</td>
+              <td>${s.status}</td>
+              <td>
+                <button class="blue" onclick='editStudent(${JSON.stringify(s).replace(/'/g,"\\'")})'  style="padding:4px 10px;font-size:12px;">Edit</button>
+                <button class="red"  onclick="deleteStudent('${s._id}')" style="padding:4px 10px;font-size:12px;">Delete</button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { wrap.innerHTML = '<p style="color:red;">Could not load. Is Flask running?</p>'; }
+}
+
+function editStudent(s) {
+  document.getElementById('edit-id').value    = s._id;
+  document.getElementById('name').value       = s.name || '';
+  document.getElementById('roll').value       = s.roll || '';
+  document.getElementById('phone').value      = s.phone || '';
+  document.getElementById('email').value      = s.email || '';
+  document.getElementById('course').value     = s.course || '';
+  document.getElementById('department').value = s.department || '';
+  document.getElementById('notes').value      = s.notes || '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function deleteStudent(id) {
+  if (!confirm('Remove this student?')) return;
+  await fetch(`/api/students/${id}`, { method: 'DELETE' });
+  loadStudents(currentFilter);
+}
+
+async function runSQL() {
+  const sql = document.getElementById('sql-input').value.trim();
+  if (!sql) return;
+  const out = document.getElementById('sql-result');
+  out.style.display = 'block';
+  out.textContent = 'Running...';
+  try {
+    const res  = await fetch('/api/dbms', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sql}) });
+    const data = await res.json();
+    out.textContent = data.message;
+    if (data.rows && data.rows.length) {
+      // Show as a nice table
+      const cols = data.columns || Object.keys(data.rows[0]);
+      let table = '\n\n' + cols.join(' | ') + '\n' + cols.map(c => '-'.repeat(c.length + 2)).join('-') + '\n';
+      data.rows.forEach(row => {
+        table += cols.map(c => String(row[c] ?? '')).join(' | ') + '\n';
+      });
+      out.textContent += table;
+    }
+    // Auto-refresh records after write commands
+    const writeCommands = ['INSERT', 'UPDATE', 'DELETE', 'MERGE', 'TRUNCATE', 'DROP'];
+    const cmdUsed = sql.trim().toUpperCase().split(' ')[0];
+    if (writeCommands.includes(cmdUsed)) {
+      loadStudents(currentFilter);
+    }
+  } catch(e) { out.textContent = 'Error. Is Flask running?'; }
+}
+
+loadStudents('active');
+</script>
+</body>
+</html>
