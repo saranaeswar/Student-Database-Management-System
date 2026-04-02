@@ -42,7 +42,7 @@ Open your browser at: **http://127.0.0.1:5000**
 
 ---
 
-## ☁️ Deploy to Render
+## ☁️ Deploy to Vercel
 
 ### 1. Push to GitHub
 
@@ -52,13 +52,11 @@ git commit -m "your message"
 git push origin main
 \```
 
-### 2. Connect to Render
+### 2. Connect to Vercel
 
-- Go to [render.com](https://render.com) and sign in with GitHub
-- Click **New** → **Web Service**
-- Select your repository
-- Set **Build Command:** `pip install -r requirements.txt`
-- Set **Start Command:** `python app.py`
+- Go to [vercel.com](https://vercel.com) and sign in with GitHub
+- Click **Add New Project**
+- Select your repository and click **Import**
 
 ### 3. Add Environment Variable
 
@@ -68,10 +66,10 @@ git push origin main
 
 ### 4. Deploy
 
-- Click **Create Web Service**
-- Render deploys automatically on every push to GitHub
+- Click **Deploy**
+- Vercel gives you a live link instantly!
 
----
+🌐 **Live URL:** https://student-database-management-system-two.vercel.app/
 
 ## 📋 Features
 
