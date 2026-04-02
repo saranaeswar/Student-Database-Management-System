@@ -6,20 +6,21 @@ A full-stack Student Management System built with **Flask** + **MongoDB Atlas**,
 
 ## 📁 Folder Structure
 
-\```
+```
 .
-├── app.py                  ← Flask backend (all API routes)
+├── api/
+│   ├── app.py              ← Flask backend (API routes) with Vercel handler
+│   ├── templates/
+│   │   └── index.html      ← Main HTML page
+│   └── static/
+│       ├── css/
+│       │   └── style.css   ← Stylesheet
+│       └── js/
+│           └── main.js     ← Frontend JavaScript
 ├── requirements.txt        ← Python dependencies
 ├── vercel.json             ← Vercel deployment config
-├── .gitignore
-├── templates/
-│   └── index.html          ← Main UI page (with sidebar cheatsheet)
-└── static/
-    ├── css/
-    │   └── style.css       ← Stylesheet
-    └── js/
-        └── main.js         ← Frontend JavaScript
-\```
+└── README.md               ← This file
+```
 
 ---
 
