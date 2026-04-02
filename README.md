@@ -1,4 +1,4 @@
-Student Management System
+# Student-DataBase — Student Management System
 
 A full-stack Student Management System built with **Flask** + **MongoDB**, deployable to **Vercel**.
 
