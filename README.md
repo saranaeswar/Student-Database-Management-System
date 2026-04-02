@@ -1,125 +1,126 @@
 # Student-DataBase — Student Management System
 
-A full-stack Student Management System built with **Flask** + **MongoDB**, deployable to **Vercel**.
+A full-stack Student Management System built with **Flask** + **MongoDB Atlas**, deployed on **Vercel** and **Render**.
 
 ---
 
 ## 📁 Folder Structure
 
-```
+\```
 .
-├── api/
-│   ├── app.py              ← Flask backend (API routes) with Vercel handler
-│   ├── templates/
-│   │   └── index.html      ← Main HTML page
-│   └── static/
-│       ├── css/
-│       │   └── style.css   ← Stylesheet
-│       └── js/
-│           └── main.js     ← Frontend JavaScript
+├── app.py                  ← Flask backend (all API routes)
 ├── requirements.txt        ← Python dependencies
 ├── vercel.json             ← Vercel deployment config
-└── README.md               ← This file
-```
+├── .gitignore
+├── templates/
+│   └── index.html          ← Main UI page (with sidebar cheatsheet)
+└── static/
+    ├── css/
+    │   └── style.css       ← Stylesheet
+    └── js/
+        └── main.js         ← Frontend JavaScript
+\```
 
 ---
 
 ## 🚀 Local Setup
 
 ### 1. Install Python dependencies
-```bash
+
+\```bash
 pip install -r requirements.txt
-```
+\```
 
-### 2. Set up PostgreSQL (optional for local)
-For local development, you can use SQLite (default) or set up PostgreSQL.
+### 2. Run Flask
 
-If using PostgreSQL locally:
-- Install PostgreSQL.
-- Create a database.
-- Set `DATABASE_URL` to your local PostgreSQL URL.
-
-### 3. Run Flask
-```bash
-python api/app.py
-```
+\```bash
+python app.py
+\```
 
 Open your browser at: **http://127.0.0.1:5000**
 
 ---
 
-## ☁️ Deploy to Railway
+## ☁️ Deploy to Render
 
 ### 1. Push to GitHub
-```bash
+
+\```bash
 git add .
-git commit -m "Your commit message"
+git commit -m "your message"
 git push origin main
-```
+\```
 
-### 2. Connect to Railway
-- Go to [Railway.app](https://railway.app) and sign in.
-- Click "New Project" > "Deploy from GitHub repo".
-- Select your `student-management-system` repo.
-- Railway will auto-detect Python and deploy.
+### 2. Connect to Render
 
-### 3. Set Up Database
-- In Railway dashboard, go to your project > "Variables".
-- Railway provides a `DATABASE_URL` automatically for the PostgreSQL database.
-- No need to set it manually—Railway handles it.
+- Go to [render.com](https://render.com) and sign in with GitHub
+- Click **New** → **Web Service**
+- Select your repository
+- Set **Build Command:** `pip install -r requirements.txt`
+- Set **Start Command:** `python app.py`
+
+### 3. Add Environment Variable
+
+| Key | Value |
+|-----|-------|
+| `MONGO_URI` | your MongoDB Atlas connection string |
 
 ### 4. Deploy
-- Railway deploys automatically on push.
-- Your app will be live with a Railway URL.
 
-### Environment Variables
-Railway sets `DATABASE_URL` automatically. If you need custom vars, add them in the Variables tab.
+- Click **Create Web Service**
+- Render deploys automatically on every push to GitHub
 
 ---
 
 ## 📋 Features
 
-- ✅ Add new students
-- ✅ View all students (filter by active/inactive)
-- ✅ Update student details
-- ✅ Delete students
-- ✅ Responsive UI with Bootstrap
+- ✅ Register new students with full details
+- ✅ View all students (Active / All tabs)
+- ✅ Edit and update student records
+- ✅ Delete students permanently
+- ✅ Built-in DBMS Console (DDL, DML, DCL commands)
+- ✅ SQL Syntax Sidebar Cheatsheet with auto-fill
+- ✅ Auto-refresh after write operations
+
+---
+
+## 🖥️ DBMS Console Commands
+
+| Category | Commands |
+|----------|----------|
+| **DDL** | CREATE, ALTER, DROP, TRUNCATE, RENAME, COMMENT |
+| **DML** | SELECT, INSERT, UPDATE, DELETE, MERGE |
+| **DCL** | GRANT, REVOKE |
 
 ---
 
 ## 🔌 API Endpoints
 
-| Method | Endpoint          | Description              |
-|--------|-------------------|--------------------------|
-| GET    | `/api/students`   | Get all students         |
-| POST   | `/api/students`   | Add a new student        |
-| PUT    | `/api/students/<id>` | Update a student         |
-| DELETE | `/api/students/<id>` | Delete a student         |
-
-**Query Params for GET:**
-- `filter=active` → Show only active students
-- `filter=all` → Show all students
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/students` | Get all students |
+| POST | `/api/students` | Add a new student |
+| PUT | `/api/students/<id>` | Update a student |
+| DELETE | `/api/students/<id>` | Delete a student |
+| POST | `/api/sql` | Run SQL commands |
 
 ---
 
 ## 🛠️ Tech Stack
 
 - **Backend:** Flask (Python)
-- **Database:** PostgreSQL
+- **Database:** MongoDB Atlas
 - **Frontend:** HTML, CSS, JavaScript
-- **Deployment:** Railway
-- **ORM:** SQLAlchemy
-- **Styling:** Bootstrap
+- **Deployment:** Render / Vercel
 
 ---
 
 ## 📝 Notes
 
-- Uses environment variables for secure DB connection.
-- Data is stored in PostgreSQL with fields: id, name, roll, phone, email, course, department, notes, status, created_at.
-- For local dev, defaults to SQLite. Set `DATABASE_URL` for PostgreSQL.
-- Railway provides the database automatically in production.
+- MongoDB Atlas must have `0.0.0.0/0` in Network Access for cloud deployment
+- Set `MONGO_URI` as an environment variable in Render
+- Data is stored in MongoDB with fields: name, roll, phone, email, course, department, notes, status, created_at
 
 ---
 
-Enjoy your Student Management System! 🎓
+Developed by **Saranaeswar** | CSBS (Batch 2024–2028) 🎓
